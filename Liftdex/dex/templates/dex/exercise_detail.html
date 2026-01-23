@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>{{ exercise.name }}</h1>
+<p>{{ exercise.english_name }}</p>
+
+<section>
+  <h2>主動筋</h2>
+  {% for m in primary_muscles %}
+    <span>{{ m.name }}</span>
+  {% empty %}
+    <p>なし</p>
+  {% endfor %}
+</section>
+
+<section>
+  <h2>補助筋</h2>
+  {% for m in secondary_muscles %}
+    <span>{{ m.name }}</span>
+  {% empty %}
+    <p>なし</p>
+  {% endfor %}
+</section>
+
+<section>
+  <h2>参考動画</h2>
+  <ul>
+    {% for v in videos %}
+      <li>
+        {% if v.is_recommended %}<strong>おすすめ</strong>{% endif %}
+        <a href="{{ v.url }}" target="_blank" rel="noopener">{{ v.title }}</a>
+      </li>
+    {% empty %}
+      <li>動画なし</li>
+    {% endfor %}
+  </ul>
+</section>
+
+<section>
+  <h2>推奨レップ</h2>
+  <ul>
+    <li>筋力アップ: {{ exercise.strength_rep_min }}-{{ exercise.strength_rep_max }}</li>
+    <li>筋肥大: {{ exercise.hypertrophy_rep_min }}-{{ exercise.hypertrophy_rep_max }}</li>
+    <li>筋持久力: {{ exercise.endurance_rep_min }}-{{ exercise.endurance_rep_max }}</li>
+  </ul>
+</section>
+
+<section>
+  <h2>代替種目</h2>
+  <ul>
+    {% for a in alternatives %}
+      <li><a href="{% url 'exercise_detail' a.slug %}">{{ a.name }}</a></li>
+    {% empty %}
+      <li>なし</li>
+    {% endfor %}
+  </ul>
+</section>
+
+<section>
+  <h2>器具切替</h2>
+  <ul>
+    {% for v in variant_exercises %}
+      <li><a href="{% url 'exercise_detail' v.slug %}">{{ v.name }}</a></li>
+    {% empty %}
+      <li>なし</li>
+    {% endfor %}
+  </ul>
+</section>
+
+<section>
+    <h2>コメント</h2>
+    <ul>
+      {% for c in comments %}
+        <li>
+          {{ c.user }}:
+          {% if c.url %}
+            <a href="{{ c.url }}" target="_blank" rel="noopener">{{ c.url }}</a>
+          {% endif %}
+          {{ c.content }}
+        </li>
+      {% empty %}
+        <li>コメントなし</li>
+      {% endfor %}
+    </ul>
+
+    {% if user.is_authenticated %}
+        <form method="post" action="{% url 'toggle_bookmark' exercise.slug %}">
+            {% csrf_token %}
+            {% if is_bookmarked %}
+                <button type="submit">ブックマーク解除</button>
+            {% else %}
+                <button type="submit">ブックマーク</button>
+            {% endif %}
+        </form>
+    {% else %}
+        <p>ブックマークにはログインが必要です。</p>
+    {% endif %}
+  
+    {% if user.is_authenticated %}
+        <form method="post" action="{% url 'exercise_detail' exercise.slug %}">
+            {% csrf_token %}
+            {{ comment_form.as_p }}
+            <button type="submit">投稿</button>
+        </form>
+    {% else %}
+        <p>コメント投稿にはログインが必要です。</p>
+    {% endif %}
+</section>
+{% endblock %}

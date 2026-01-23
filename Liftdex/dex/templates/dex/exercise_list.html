@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>種目一覧</h1>
+
+<form method="get" action="{% url 'exercise_list' %}">
+  <input type="text" name="q" value="{{ q }}" placeholder="種目名・英語名・筋肉名で検索">
+  <button type="submit">検索</button>
+</form>
+
+<ul>
+  {% for exercise in exercises %}
+    <li>
+      <a href="{% url 'exercise_detail' exercise.slug %}">{{ exercise.name }}</a>
+      （{{ exercise.english_name }}）
+      {% for m in exercise.primary_muscles.all %}
+        <span>{{ m.name }}</span>
+      {% endfor %}
+    </li>
+  {% empty %}
+    <li>該当する種目がありません</li>
+  {% endfor %}
+</ul>
+{% endblock %}
