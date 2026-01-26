@@ -2,8 +2,21 @@
 {% block content %}
 <section class="section card">
   <h1 class="card-title">アカウント</h1>
-  <p>@{{ user.username }}</p>
-  <p>{{ user.email }}</p>
+  <div class="form-row">
+    <label>ユーザー名</label>
+    <div class="auth-value">@{{ user.username }}</div>
+  </div>
+
+  <div class="form-row">
+    <label>メールアドレス</label>
+    <div class="auth-value">{{ user.email }}</div>
+  </div>
+
+  <div class="auth-actions">
+    <a class="btn btn-primary auth-btn" href="{% url 'account_edit' %}">アカウント情報を編集</a>
+    <a class="btn auth-btn" href="{% url 'password_change' %}">パスワードを変更</a>
+  </div>
+
 </section>
 
 <section class="section">

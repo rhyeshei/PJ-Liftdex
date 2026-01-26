@@ -1,12 +1,10 @@
 {% extends "base.html" %}
 {% block content %}
 <section class="section card auth-card">
-  <h1 class="card-title">ログイン</h1>
-
+  <h1 class="card-title">アカウント編集</h1>
   <form method="post" class="auth-form">
     {% csrf_token %}
     {{ form.non_field_errors }}
-
     {% for field in form %}
       <div class="form-row">
         <label for="{{ field.id_for_label }}">{{ field.label }}</label>
@@ -16,10 +14,7 @@
         {% endfor %}
       </div>
     {% endfor %}
-
-    <button class="btn btn-primary auth-btn" type="submit">ログイン</button>
+    <button class="btn btn-primary auth-btn" type="submit">保存</button>
   </form>
-
-  <p class="auth-link"><a href="{% url 'signup' %}">新規登録はこちら</a></p>
 </section>
 {% endblock %}

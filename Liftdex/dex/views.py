@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Q, F
 from django.shortcuts import get_object_or_404, redirect, render
 
-from .forms import CommentForm, SignupForm
+from .forms import CommentForm, SignupForm, AccountUpdateForm
 from .models import Exercise, ExerciseAlternative, Bookmark
 
 def signup(request):
@@ -29,6 +29,18 @@ def account_detail(request):
         "dex/account_detail.html",
         {"bookmarks": bookmarks},
     )
+
+@login_required
+def account_edit(request):
+    if request.method == "POST":
+        form = AccountUpdateForm(request.POST, instance=request.user)
+        if form.is_valid():
+            form.save()
+            return redirect("account_detail")
+    else:
+        form = AccountUpdateForm(instance=request.user)
+    return render(request, "dex/account_edit.html", {"form": form})
+
 
 @login_required
 def toggle_bookmark(request, slug):

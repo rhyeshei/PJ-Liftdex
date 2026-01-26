@@ -1,3 +1,35 @@
+body {
+  background-color: #f5f5f5; /* 念のための下地 */
+  background-image: url("/static/dex/images/back.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-attachment: fixed;
+  background-size: cover;
+}
+
+
+
+.auth-card { max-width: 420px; margin: 32px auto; }
+.auth-form { margin-top: 12px; }
+
+.form-row { margin: 12px 0; display: grid; gap: 6px; }
+.form-row label { font-size: 12px; color: var(--muted); }
+
+.form-row input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #fff;
+}
+
+.form-help { font-size: 11px; color: var(--muted); line-height: 1.4; }
+.form-error { font-size: 11px; color: #c0392b; }
+
+.auth-btn { width: 100%; margin-top: 8px; }
+.auth-link { text-align: center; margin-top: 12px; }
+
+
 .page-home .card-title { font-size: 14px; }
 .page-exercise-detail .card-title { font-size: 25px; }
 
@@ -88,7 +120,7 @@
 
 /* tags */
 .tag-group { display: flex; flex-wrap: wrap; gap: 6px; }
-.tag { background: #f2e7d7; border: 1px solid #e7d8c5; }
+.tag { background: #ffffff; border: 1px solid #e7d8c5; }
 
 /* buttons */
 .btn {  border-radius: 8px; border: 1px solid var(--border); background: #fff; }
@@ -182,7 +214,12 @@
   cursor: pointer;
 }
 
-.send-icon { font-size: 16px; }
+.send-icon {
+  width: 16px;
+  height: 16px;
+  display: inline-block;
+}
+
 .send-text { display: none; }
 
 /* デスクトップ：テキスト表示 */
@@ -223,3 +260,79 @@
   flex-wrap: nowrap; /* 長文は折り返し */
 }
 .comment-text { flex: 1; }
+
+.nav-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-list li {
+  margin: 8px 0;
+}
+
+.nav-list a {
+  text-decoration: none;
+  color: #111;
+}
+
+.nav-toggle:checked + .menu-button + .nav-drawer {
+  display: block;
+}
+
+
+.nav-toggle {
+  display: none;
+}
+
+.menu-button {
+  background: none;
+  border: 0;
+  padding: 6px;
+  cursor: pointer;
+}
+
+.menu-icon {
+  width: 26px; /* 好みで調整 */
+  height: auto;
+  display: block;
+}
+
+/* 背景の暗幕 */
+.nav-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.35);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  z-index: 900;
+}
+
+/* メニュー本体 */
+.nav-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: min(80vw, 320px);
+  height: 100vh;
+  background: #fff;
+  transform: translateX(100%);
+  transition: transform 0.25s ease;
+  z-index: 1000;
+  padding: 24px;
+
+}
+
+/* 開いた状態 */
+.nav-toggle:checked ~ .nav-overlay {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.nav-toggle:checked ~ .nav-drawer {
+  transform: translateX(0);
+}
+
+.auth-value { padding: 10px; background: #fff; border: 1px solid var(--border); border-radius: 8px; }
+.auth-actions { display: grid; gap: 8px; margin-top: 12px; }

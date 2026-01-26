@@ -29,3 +29,15 @@ class CommentForm(forms.ModelForm):
             "url": forms.URLInput(attrs={"placeholder": "参考動画URL（任意）"}),
             "content": forms.Textarea(attrs={"rows":3, "placeholder": "コメント"}),
         }
+
+class AccountUpdateForm(forms.ModelForm):
+    class Meta:
+        model = get_user_model()
+        fields = ("username", "email")
+
+    def clean_email(self):
+        email = self.cleaned_data["email"]
+        qs = get_user_model().objects.filter(email=email).exclude(pk=self.instance.pk)
+        if qs.exists():
+            raise forms.ValidationError("このメールアドレスは既に使われています。")
+        return email

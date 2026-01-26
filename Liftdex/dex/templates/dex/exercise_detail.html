@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load time_filters %}
+{% load time_filters static %}
 {% block body_class %}page-exercise-detail{% endblock %}
 
 {% block content %}
@@ -141,7 +141,7 @@
         <div class="comment-inline">
           {{ comment_form.content }}
           <button class="send-btn" type="submit" aria-label="コメントを送信">
-            <span class="send-icon" aria-hidden="true">✈︎</span>
+            <img class="send-icon" src="{% static 'dex/images/send.svg' %}" alt="" aria-hidden="true">
             <span class="send-text">コメント</span>
           </button>
         </div>

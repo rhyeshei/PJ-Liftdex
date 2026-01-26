@@ -9,12 +9,34 @@
 </head>
 
 <header class="site-header">
-    <div class="brand">
-      <a href="{% url 'home' %}" class="brand-title">Liftdex</a>
-    </div>
-    <button class="menu-button" aria-label="メニュー">
-      ☰
-    </button>
+  <div class="brand">
+    <a href="{% url 'home' %}" class="brand-title">Liftdex</a>
+  </div>
+
+  <input type="checkbox" id="nav-toggle" class="nav-toggle" />
+  <label for="nav-toggle" class="menu-button" aria-label="メニュー">
+    <svg class="menu-icon" viewBox="0 0 30 26" aria-hidden="true">
+      <path d="M9.6875 4.4375H29.375M0.5 14.9375H29.375M0.5 25.4375H29.375M0.5 8.375L4.4375 4.4375L0.5 0.5"
+            fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </label>
+  
+  <label for="nav-toggle" class="nav-overlay" aria-hidden="true"></label>
+
+  <nav class="nav-drawer">
+    <ul class="nav-list">
+      <li><a href="{% url 'home' %}">トップ</a></li>
+      <li><a href="{% url 'exercise_list' %}">種目一覧</a></li>
+
+      {% if user.is_authenticated %}
+        <li><a href="{% url 'account_detail' %}">マイページ</a></li>
+        <li><a href="{% url 'logout' %}">ログアウト</a></li>
+      {% else %}
+        <li><a href="{% url 'login' %}">ログイン</a></li>
+        <li><a href="{% url 'signup' %}">新規登録</a></li>
+      {% endif %}
+    </ul>
+  </nav>
 </header>
 
 <body class="{% block body_class %}{% endblock %}">
