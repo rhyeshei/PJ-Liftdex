@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="section card">
+  <h1 class="card-title">アカウント</h1>
+  <p>@{{ user.username }}</p>
+  <p>{{ user.email }}</p>
+</section>
+
+<section class="section">
+  <h2>ブックマーク</h2>
+  <div class="grid grid-3">
+    {% for b in bookmarks %}
+      <div class="card">
+        <p class="card-title">
+          <a href="{% url 'exercise_detail' b.exercise.slug %}">{{ b.exercise.name }}</a>
+        </p>
+        <p class="card-sub">{{ b.exercise.english_name }}</p>
+      </div>
+    {% empty %}
+      <p>ブックマークはまだありません</p>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

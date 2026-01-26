@@ -15,11 +15,10 @@ def signup(request):
             return redirect("home")
     else:
         form = SignupForm()
-    return render(request, "registration/signuo.html", {"form": form})
+    return render(request, "registration/signup.html", {"form": form})
 
 @login_required
 def account_detail(request):
-    exercise = get_object_or_404(Exercise)
     bookmarks = (
         Bookmark.objects.filter(user=request.user)
         .select_related("exercise")

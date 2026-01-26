@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="section card">
+  <h1 class="card-title">ログイン</h1>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button class="btn btn-primary" type="submit">ログイン</button>
+  </form>
+  <p><a href="{% url 'signup' %}">新規登録はこちら</a></p>
+</section>
+{% endblock %}
