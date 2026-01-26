@@ -1,24 +1,36 @@
 {% extends "base.html" %}
 
+{% block body_class %}page-exercise-list{% endblock %}
+
 {% block content %}
-<h1>種目一覧</h1>
+<section class="section card">
+  <h1 class="card-title">種目一覧</h1>
+  <form method="get" action="{% url 'exercise_list' %}">
+    <input type="text" name="q" value="{{ q }}" placeholder="種目名・英語名・筋肉名で検索">
+    <button class="btn btn-primary" type="submit">検索</button>
+  </form>
+</section>
 
-<form method="get" action="{% url 'exercise_list' %}">
-  <input type="text" name="q" value="{{ q }}" placeholder="種目名・英語名・筋肉名で検索">
-  <button type="submit">検索</button>
-</form>
-
-<ul>
-  {% for exercise in exercises %}
-    <li>
-      <a href="{% url 'exercise_detail' exercise.slug %}">{{ exercise.name }}</a>
-      （{{ exercise.english_name }}）
-      {% for m in exercise.primary_muscles.all %}
-        <span>{{ m.name }}</span>
-      {% endfor %}
-    </li>
-  {% empty %}
-    <li>該当する種目がありません</li>
-  {% endfor %}
-</ul>
+<section class="section">
+  <div class="grid grid-2">
+    {% for exercise in exercises %}
+      <div class="card">
+        <p class="card-title">
+          <a href="{% url 'exercise_detail' exercise.slug %}">{{ exercise.name }}</a>
+        </p>
+        <p class="card-sub">{{ exercise.english_name }}</p>
+        <div class="tag-group">
+          {% for m in exercise.primary_muscles.all %}
+            <span class="tag">{{ m.name }}</span>
+          {% endfor %}
+          {% for m in exercise.secondary_muscles.all %}
+            <span class="tag">{{ m.name }}</span>
+          {% endfor %}
+        </div>
+      </div>
+    {% empty %}
+      <p>該当する種目がありません</p>
+    {% endfor %}
+  </div>
+</section>
 {% endblock %}

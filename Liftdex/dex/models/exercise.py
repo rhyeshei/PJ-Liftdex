@@ -3,6 +3,7 @@ from django.utils.text import slugify
 
 from .choices import Difficulty, Equipment, ExerciseType
 from .muscle import Muscle
+from urllib.parse import urlparse, parse_qs
 
 class Exercise(models.Model):
     name = models.CharField(max_length=200)
@@ -19,7 +20,11 @@ class Exercise(models.Model):
         Muscle, related_name="secondary_exercises", blank=True
     )
 
-    tips = models.TextField(blank=True)
+    tips_setup = models.TextField(blank=True)
+    tips_negative = models.TextField(blank=True)
+    tips_positive = models.TextField(blank=True)
+    tips_points = models.TextField(blank=True)
+
     view_count = models.PositiveIntegerField(default=0)
     base_exercise = models.ForeignKey(
         "self", on_delete=models.SET_NULL, null=True, blank=True, related_name="variants"
@@ -79,6 +84,22 @@ class ExerciseVideo(models.Model):
 
     def __str__(self):
         return self.title
+    
+    def get_embed_url(self):
+        parsed = urlparse(self.url)
+        host = parsed.netloc
+
+        if "youtu.be" in host:
+            video_id = parsed.path.lstrip("/")
+        elif "youtube.com" in host:
+            video_id = parse_qs(parsed.query).get("v", [None])[0]
+        else:
+            return None
+
+        if not video_id:
+            return None
+
+        return f"https://www.youtube-nocookie.com/embed/{video_id}"
 
 
 class ExerciseAlternative(models.Model):

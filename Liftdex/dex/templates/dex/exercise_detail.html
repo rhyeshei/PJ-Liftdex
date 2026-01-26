@@ -1,51 +1,107 @@
 {% extends "base.html" %}
+{% load time_filters %}
+{% block body_class %}page-exercise-detail{% endblock %}
 
 {% block content %}
-<h1>{{ exercise.name }}</h1>
-<p>{{ exercise.english_name }}</p>
 
-<section>
-  <h2>主動筋</h2>
-  {% for m in primary_muscles %}
-    <span>{{ m.name }}</span>
-  {% empty %}
-    <p>なし</p>
-  {% endfor %}
+
+<section class="section card">
+    <div class="title-row">
+      <div>
+        <h1 class="card-title">{{ exercise.name }}</h1>
+        <p class="card-sub">{{ exercise.english_name }}</p>
+      </div>
+  
+      {% if user.is_authenticated %}
+        <form method="post" action="{% url 'toggle_bookmark' exercise.slug %}">
+          {% csrf_token %}
+          {% if is_bookmarked %}
+            <button class="btn" type="submit">ブックマーク解除</button>
+          {% else %}
+            <button class="btn btn-primary" type="submit">ブックマーク</button>
+          {% endif %}
+        </form>
+      {% endif %}
+    </div>
+  
+    <div class="muscle-block">
+      <div class="muscle-group">
+        <span class="muscle-label">主動筋</span>
+        <div class="tag-group">
+          {% for m in primary_muscles %}
+            <span class="tag">{{ m.name }}</span>
+          {% empty %}
+            <span class="tag">なし</span>
+          {% endfor %}
+        </div>
+      </div>
+  
+      <div class="muscle-group">
+        <span class="muscle-label">補助筋</span>
+        <div class="tag-group">
+          {% for m in secondary_muscles %}
+            <span class="tag">{{ m.name }}</span>
+          {% empty %}
+            <span class="tag">なし</span>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
 </section>
 
-<section>
-  <h2>補助筋</h2>
-  {% for m in secondary_muscles %}
-    <span>{{ m.name }}</span>
-  {% empty %}
-    <p>なし</p>
-  {% endfor %}
+
+
+<section class="section card">
+    <h2>参考動画</h2>
+  
+    <div class="video-slider">
+      <div class="video-track">
+        {% for v in videos %}
+          <div class="video-slide">
+            {% if v.get_embed_url %}
+              <iframe
+                src="{{ v.get_embed_url }}"
+                title="{{ v.title }}"
+                loading="lazy"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen>
+              </iframe>
+            {% else %}
+              <a href="{{ v.url }}" target="_blank" rel="noopener">{{ v.title }}</a>
+            {% endif %}
+          </div>
+        {% empty %}
+          <p>動画なし</p>
+        {% endfor %}
+      </div>
+    </div>
+</section>    
+
+<section class="section card">
+  <h2>Tips</h2>
+  <h3>セットアップ</h3>
+  <p class="detail-text">{{ exercise.tips_setup }}</p>
+
+  <h3>ネガティブ</h3>
+  <p class="detail-text">{{ exercise.tips_negative }}</p>
+
+  <h3>ポジティブ</h3>
+  <p class="detail-text">{{ exercise.tips_positive }}</p>
+
+  <h3>ポイント</h3>
+  <p class="detail-text">{{ exercise.tips_points }}</p>
 </section>
 
-<section>
-  <h2>参考動画</h2>
-  <ul>
-    {% for v in videos %}
-      <li>
-        {% if v.is_recommended %}<strong>おすすめ</strong>{% endif %}
-        <a href="{{ v.url }}" target="_blank" rel="noopener">{{ v.title }}</a>
-      </li>
-    {% empty %}
-      <li>動画なし</li>
-    {% endfor %}
-  </ul>
-</section>
-
-<section>
+<section class="section card">
   <h2>推奨レップ</h2>
-  <ul>
-    <li>筋力アップ: {{ exercise.strength_rep_min }}-{{ exercise.strength_rep_max }}</li>
-    <li>筋肥大: {{ exercise.hypertrophy_rep_min }}-{{ exercise.hypertrophy_rep_max }}</li>
-    <li>筋持久力: {{ exercise.endurance_rep_min }}-{{ exercise.endurance_rep_max }}</li>
-  </ul>
+  <ul class="rep-list">
+    <li><span class="rep-label">筋力アップ</span><span class="rep-value">{{ exercise.strength_rep_min }}-{{ exercise.strength_rep_max }}</span></li>
+    <li><span class="rep-label">筋肥大</span><span class="rep-value">{{ exercise.hypertrophy_rep_min }}-{{ exercise.hypertrophy_rep_max }}</span></li>
+    <li><span class="rep-label">筋持久力</span><span class="rep-value">{{ exercise.endurance_rep_min }}-{{ exercise.endurance_rep_max }}</span></li>
+  </ul>  
 </section>
 
-<section>
+<section class="section card">
   <h2>代替種目</h2>
   <ul>
     {% for a in alternatives %}
@@ -56,7 +112,7 @@
   </ul>
 </section>
 
-<section>
+<section class="section card">
   <h2>器具切替</h2>
   <ul>
     {% for v in variant_exercises %}
@@ -67,43 +123,55 @@
   </ul>
 </section>
 
-<section>
-    <h2>コメント</h2>
-    <ul>
-      {% for c in comments %}
-        <li>
-          {{ c.user }}:
-          {% if c.url %}
-            <a href="{{ c.url }}" target="_blank" rel="noopener">{{ c.url }}</a>
-          {% endif %}
-          {{ c.content }}
-        </li>
-      {% empty %}
-        <li>コメントなし</li>
-      {% endfor %}
-    </ul>
+{% load humanize %}
+<section class="section">
+  <div class="comment-header">
+    <h2>{{ comments|length }}件のコメント</h2>
+    <button class="comment-sort">並べ替え</button>
+  </div>
 
-    {% if user.is_authenticated %}
-        <form method="post" action="{% url 'toggle_bookmark' exercise.slug %}">
-            {% csrf_token %}
-            {% if is_bookmarked %}
-                <button type="submit">ブックマーク解除</button>
-            {% else %}
-                <button type="submit">ブックマーク</button>
-            {% endif %}
-        </form>
-    {% else %}
-        <p>ブックマークにはログインが必要です。</p>
-    {% endif %}
+  {% if user.is_authenticated %}
+  <form method="post" action="{% url 'exercise_detail' exercise.slug %}" class="comment-form">
+    {% csrf_token %}
+    <div class="comment-row">
+      <div class="avatar">{{ user.username|first }}</div>
+      <div class="comment-inputs">
+        {{ comment_form.url }}
   
-    {% if user.is_authenticated %}
-        <form method="post" action="{% url 'exercise_detail' exercise.slug %}">
-            {% csrf_token %}
-            {{ comment_form.as_p }}
-            <button type="submit">投稿</button>
-        </form>
-    {% else %}
-        <p>コメント投稿にはログインが必要です。</p>
-    {% endif %}
+        <div class="comment-inline">
+          {{ comment_form.content }}
+          <button class="send-btn" type="submit" aria-label="コメントを送信">
+            <span class="send-icon" aria-hidden="true">✈︎</span>
+            <span class="send-text">コメント</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </form>
+  
+  {% else %}
+    <p>コメント投稿にはログインが必要です。</p>
+  {% endif %}
+
+  <div class="comment-list">
+    {% for c in comments %}
+      <div class="comment-item">
+        <div class="avatar">{{ c.user.username|first }}</div>
+        <div class="comment-body">
+          <div class="comment-meta">
+            <span class="comment-user">@{{ c.user.username }}</span>
+            <span class="comment-time">{{ c.created_at|short_ago }}</span>
+          </div>
+          <div class="comment-text">{{ c.content }}</div>
+          {% if c.url %}
+            <a class="comment-link" href="{{ c.url }}" target="_blank" rel="noopener">リンク</a>
+          {% endif %}
+        </div>
+      </div>
+    {% empty %}
+      <p>コメントなし</p>
+    {% endfor %}
+  </div>    
 </section>
+
 {% endblock %}

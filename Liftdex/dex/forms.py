@@ -23,7 +23,7 @@ class EmailAuthenticationForm(AuthenticationForm):
 
 class CommentForm(forms.ModelForm):
     class Meta:
-        models = Comment
+        model = Comment
         fields = ["url", "content"]
         widgets = {
             "url": forms.URLInput(attrs={"placeholder": "参考動画URL（任意）"}),

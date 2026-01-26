@@ -56,7 +56,12 @@ class ExerciseAdmin(admin.ModelAdmin):
             ("hypertrophy_rep_min", "hypertrophy_rep_max"),
             ("endurance_rep_min", "endurance_rep_max"),
         )}),
-        ("補足", {"fields": ("tips", "base_exercise")}),
+        ("Tips", {"fields": (
+            "tips_setup",
+            "tips_negative",
+            "tips_positive",
+            "tips_points",
+        )}),
         ("統計", {"fields": ("view_count",)}),
     )
 
@@ -78,13 +83,21 @@ class MuscleAdmin(admin.ModelAdmin):
 
 @admin.register(Bookmark)
 class BookmarkAdmin(admin.ModelAdmin):
-    list_display = ("user", "exercise", "created_at")
+    list_display = ("user_username", "exercise", "created_at")
     list_filter = ("created_at",)
     search_fields = ("user__username", "exercise__name")
+
+    def user_username(self, obj):
+        return obj.user.username
+    user_username.short_description = "ユーザー名"
 
 
 @admin.register(Comment)
 class CommentAdmin(admin.ModelAdmin):
-    list_display = ("user", "exercise", "created_at")
+    list_display = ("user_username", "exercise", "created_at")
     list_filter = ("created_at",)
     search_fields = ("user__username", "exercise__name", "content")
+
+    def user_username(self, obj):
+        return obj.user.username
+    user_username.short_description = "ユーザー名"

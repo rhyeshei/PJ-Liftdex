@@ -52,7 +52,7 @@ def home(request):
         bookmarks = (
             Bookmark.objects.filter(user=request.user)
             .select_related("exercise")
-            .order_by("-created_at")[:3]
+            .order_by("-created_at")[:6]
         )
     
     context = {
@@ -64,7 +64,7 @@ def home(request):
 def exercise_list(request):
     q = request.GET.get("q", "").strip()
 
-    exercise = Exercise.objects.all().prefetch_related(
+    exercises = Exercise.objects.all().prefetch_related(
         "primary_muscles", "secondary_muscles"
     )
 
@@ -77,7 +77,7 @@ def exercise_list(request):
         ).distinct()
     
     context = {
-        "exercise": exercise,
+        "exercises": exercises,
         "q": q,
     }
     return render(request, "dex/exercise_list.html", context)

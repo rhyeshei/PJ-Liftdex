@@ -1,37 +1,44 @@
 {% extends "base.html" %}
 
+{% block body_class %}page-home{% endblock %}
+
 {% block content %}
-<section>
-  <h1>Liftdex</h1>
+<section class="section card">
   <form method="get" action="{% url 'exercise_list' %}">
-    <input type="text" name="q" placeholder="種目名・英語名・筋肉名で検索">
-    <button type="submit">検索</button>
+    <input type="text" name="q" placeholder="種目名・筋肉名で検索">
+    <button class="btn btn-primary" type="submit">検索</button>
   </form>
 </section>
 
-<section>
-  <h2>ブックマーク（最大3件）</h2>
-  {% if user.is_authenticated %}
-    <ul>
-      {% for b in bookmarks %}
-        <li><a href="{% url 'exercise_detail' b.exercise.slug %}">{{ b.exercise.name }}</a></li>
-      {% empty %}
-        <li>ブックマークはまだありません</li>
-      {% endfor %}
-    </ul>
-  {% else %}
-    <p>ログインするとブックマークが表示されます。</p>
-  {% endif %}
+<section class="section">
+  <h2>ブックマーク（最大6件）</h2>
+  <div class="grid grid-3">
+    {% for b in bookmarks %}
+      <div class="card">
+        <p class="card-title">
+          <a href="{% url 'exercise_detail' b.exercise.slug %}">{{ b.exercise.name }}</a>
+        </p>
+        <p class="card-sub">{{ b.exercise.english_name }}</p>
+      </div>
+    {% empty %}
+      <p>ブックマークはまだありません</p>
+    {% endfor %}
+  </div>
 </section>
 
-<section>
+<section class="section">
   <h2>人気種目</h2>
-  <ul>
+  <div class="grid grid-3">
     {% for e in popular_exercises %}
-      <li><a href="{% url 'exercise_detail' e.slug %}">{{ e.name }}</a></li>
+      <div class="card">
+        <p class="card-title">
+          <a href="{% url 'exercise_detail' e.slug %}">{{ e.name }}</a>
+        </p>
+        <p class="card-sub">{{ e.english_name }}</p>
+      </div>
     {% empty %}
-      <li>まだ人気データがありません</li>
+      <p>まだ人気データがありません</p>
     {% endfor %}
-  </ul>
+  </div>
 </section>
 {% endblock %}
