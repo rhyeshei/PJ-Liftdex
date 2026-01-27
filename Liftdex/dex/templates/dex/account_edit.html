@@ -1,19 +1,43 @@
 {% extends "base.html" %}
+{% load static %}
 {% block content %}
 <section class="section card auth-card">
   <h1 class="card-title">アカウント編集</h1>
-  <form method="post" class="auth-form">
+
+  <form method="post" enctype="multipart/form-data" class="auth-form">
     {% csrf_token %}
     {{ form.non_field_errors }}
-    {% for field in form %}
-      <div class="form-row">
-        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-        {{ field }}
-        {% for error in field.errors %}
+
+    <div class="avatar-edit">
+      <label class="avatar-label" for="id_avatar">
+        {% if user.avatar %}
+          <img class="account-avatar" src="{{ user.avatar.url }}" alt="アイコン">
+        {% else %}
+          <img class="account-avatar" src="{% static 'dex/images/avatar.png' %}" alt="アイコン">
+        {% endif %}
+        <span class="avatar-overlay">変更</span>
+        <input type="file" name="avatar" id="id_avatar" accept="image/*">
+      </label>
+
+      {% if form.avatar.errors %}
+        {% for error in form.avatar.errors %}
           <p class="form-error">{{ error }}</p>
         {% endfor %}
-      </div>
+      {% endif %}
+    </div>
+    
+    {% for field in form %}
+      {% if field.name != "avatar" %}
+        <div class="form-row">
+          <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field }}
+          {% for error in field.errors %}
+            <p class="form-error">{{ error }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
     {% endfor %}
+    
     <button class="btn btn-primary auth-btn" type="submit">保存</button>
   </form>
 </section>

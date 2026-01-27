@@ -1,26 +1,35 @@
 {% extends "base.html" %}
+{% load static %}
+{% block body_class %}page-account{% endblock %}
 {% block content %}
-<section class="section card">
+<section class="section card auth-card">
   <h1 class="card-title">アカウント</h1>
-  <div class="form-row">
-    <label>ユーザー名</label>
-    <div class="auth-value">@{{ user.username }}</div>
-  </div>
 
-  <div class="form-row">
-    <label>メールアドレス</label>
-    <div class="auth-value">{{ user.email }}</div>
+  <div class="account-header">
+    <a href="{% url 'account_edit' %}" class="avatar-link" aria-label="アイコンを編集">
+      {% if user.avatar %}
+        <img class="account-avatar" src="{{ user.avatar.url }}" alt="アイコン">
+      {% else %}
+        <img class="account-avatar" src="{% static 'dex/images/avatar.png' %}" alt="アイコン">
+      {% endif %}
+      <span class="avatar-overlay">編集</span>
+    </a>
+  
+    <div class="account-meta">
+      <div class="account-name">@{{ user.username }}</div>
+      <div class="account-email">{{ user.email }}</div>
+    </div>
   </div>
 
   <div class="auth-actions">
     <a class="btn btn-primary auth-btn" href="{% url 'account_edit' %}">アカウント情報を編集</a>
     <a class="btn auth-btn" href="{% url 'password_change' %}">パスワードを変更</a>
   </div>
-
 </section>
 
+
 <section class="section">
-  <h2>ブックマーク</h2>
+  <h2>ブックマーク種目一覧</h2>
   <div class="grid grid-3">
     {% for b in bookmarks %}
       <div class="card">

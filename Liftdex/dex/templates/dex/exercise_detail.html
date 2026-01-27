@@ -127,7 +127,6 @@
 <section class="section">
   <div class="comment-header">
     <h2>{{ comments|length }}件のコメント</h2>
-    <button class="comment-sort">並べ替え</button>
   </div>
 
   {% if user.is_authenticated %}
@@ -141,7 +140,7 @@
         <div class="comment-inline">
           {{ comment_form.content }}
           <button class="send-btn" type="submit" aria-label="コメントを送信">
-            <img class="send-icon" src="{% static 'dex/images/send.svg' %}" alt="" aria-hidden="true">
+            <img class="send-icon" src="{% static 'dex/images/send-2.svg' %}" alt="" aria-hidden="true">
             <span class="send-text">コメント</span>
           </button>
         </div>

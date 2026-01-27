@@ -4,7 +4,7 @@
 
 {% block content %}
 <section class="section card">
-  <form method="get" action="{% url 'exercise_list' %}">
+  <form method="get" action="{% url 'exercise_list' %}" class="search-form">
     <input type="text" name="q" placeholder="種目名・筋肉名で検索">
     <button class="btn btn-primary" type="submit">検索</button>
   </form>

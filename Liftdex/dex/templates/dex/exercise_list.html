@@ -5,32 +5,97 @@
 {% block content %}
 <section class="section card">
   <h1 class="card-title">種目一覧</h1>
-  <form method="get" action="{% url 'exercise_list' %}">
-    <input type="text" name="q" value="{{ q }}" placeholder="種目名・英語名・筋肉名で検索">
-    <button class="btn btn-primary" type="submit">検索</button>
+  
+  <form method="get" action="{% url 'exercise_list' %}" class="filter-form">
+    <div class="search-form">
+      <input type="text" name="q" value="{{ q }}" placeholder="種目名・筋肉名で検索">
+      <button class="btn btn-primary" type="submit">検索</button>
+    </div>
+
+    <div class="filter-grid">
+      <details class="filter-dropdown">
+        <summary>筋群</summary>
+        <div class="filter-options">
+          {% for g in muscle_groups %}
+            <label>
+              <input type="checkbox" name="muscle_group" value="{{ g.id }}"
+                {% if g.id|stringformat:"s" in selected_groups %}checked{% endif %}>
+              {{ g.name }}
+            </label>
+          {% endfor %}
+        </div>
+      </details>
+    
+      <details class="filter-dropdown">
+        <summary>主動筋</summary>
+        <div class="filter-options">
+          {% for m in primary_muscles %}
+            <label>
+              <input type="checkbox" name="primary_muscle" value="{{ m.id }}"
+                {% if m.id|stringformat:"s" in selected_muscles %}checked{% endif %}>
+              {{ m.name }}
+            </label>
+          {% endfor %}
+        </div>
+      </details>
+    
+      <details class="filter-dropdown">
+        <summary>器具</summary>
+        <div class="filter-options">
+          {% for value,label in equipment_choices %}
+            <label>
+              <input type="checkbox" name="equipment" value="{{ value }}"
+                {% if value in selected_equipment %}checked{% endif %}>
+              {{ label }}
+            </label>
+          {% endfor %}
+        </div>
+      </details>
+    </div>
+    
   </form>
 </section>
 
-<section class="section">
-  <div class="grid grid-2">
-    {% for exercise in exercises %}
-      <div class="card">
-        <p class="card-title">
-          <a href="{% url 'exercise_detail' exercise.slug %}">{{ exercise.name }}</a>
-        </p>
-        <p class="card-sub">{{ exercise.english_name }}</p>
-        <div class="tag-group">
-          {% for m in exercise.primary_muscles.all %}
-            <span class="tag">{{ m.name }}</span>
-          {% endfor %}
-          {% for m in exercise.secondary_muscles.all %}
-            <span class="tag">{{ m.name }}</span>
-          {% endfor %}
+{% for group, items in grouped_exercises %}
+  <section class="section">
+    <h2>{{ group.name }}</h2>
+    <div class="grid grid-2">
+      {% for exercise in items %}
+        <div class="card">
+          <p class="card-title">
+            <a href="{% url 'exercise_detail' exercise.slug %}">{{ exercise.name }}</a>
+          </p>
+          <p class="card-sub">{{ exercise.english_name }}</p>
+          <div class="tag-group">
+            {% for m in exercise.primary_muscles.all %}
+              <span class="tag">{{ m.name }}</span>
+            {% endfor %}
+          </div>
         </div>
-      </div>
-    {% empty %}
-      <p>該当する種目がありません</p>
-    {% endfor %}
-  </div>
-</section>
+      {% endfor %}
+    </div>
+  </section>
+{% endfor %}
+
+{% if uncategorized %}
+  <section class="section">
+    <h2>未分類</h2>
+    <div class="grid grid-2">
+      {% for exercise in uncategorized %}
+        <div class="card">
+          <p class="card-title">
+            <a href="{% url 'exercise_detail' exercise.slug %}">{{ exercise.name }}</a>
+          </p>
+          <p class="card-sub">{{ exercise.english_name }}</p>
+          <div class="tag-group">
+            {% for m in exercise.primary_muscles.all %}
+              <span class="tag">{{ m.name }}</span>
+            {% endfor %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+{% endif %}
+
 {% endblock %}

@@ -4,7 +4,8 @@ from django.db.models import Q, F
 from django.shortcuts import get_object_or_404, redirect, render
 
 from .forms import CommentForm, SignupForm, AccountUpdateForm
-from .models import Exercise, ExerciseAlternative, Bookmark
+from .models import Exercise, ExerciseAlternative, Bookmark, MuscleGroup, Muscle
+from collections import OrderedDict
 
 def signup(request):
     if request.method == "POST":
@@ -33,7 +34,7 @@ def account_detail(request):
 @login_required
 def account_edit(request):
     if request.method == "POST":
-        form = AccountUpdateForm(request.POST, instance=request.user)
+        form = AccountUpdateForm(request.POST, request.FILES, instance=request.user)
         if form.is_valid():
             form.save()
             return redirect("account_detail")
@@ -74,22 +75,71 @@ def home(request):
 
 def exercise_list(request):
     q = request.GET.get("q", "").strip()
+    pm_ids = request.GET.getlist("primary_muscle")
+    group_ids = request.GET.getlist("muscle_group")
+    equipments = request.GET.getlist("equipment")
 
     exercises = Exercise.objects.all().prefetch_related(
-        "primary_muscles", "secondary_muscles"
+        "primary_muscles__group"
     )
 
     if q:
-        exercise = exercise.filter(
+        exercises = exercises.filter(
             Q(name__icontains=q)
             | Q(english_name__icontains=q)
             | Q(primary_muscles__name__icontains=q)
-            | Q(secondary_muscles__name__icontains=q)
-        ).distinct()
+        )
     
+    if pm_ids:
+        exercises = exercises.filter(primary_muscles__id__in=pm_ids)
+    
+    if group_ids:
+        exercises = exercises.filter(primary_muscles__group__id__in=group_ids)
+    
+    if equipments:
+        exercises = exercises.filter(equipment__in=equipments)
+
+    exercises = exercises.distinct()
+
+
+    grouped = OrderedDict()
+    uncategorized = []
+    for ex in exercises:
+        groups = []
+        seen = set()
+        for m in ex.primary_muscles.all():
+            if m.group_id in seen:
+                continue
+            seen.add(m.group_id)
+            groups.append(m.group)
+
+        if not groups:
+            uncategorized.append(ex)
+            continue
+
+        for g in sorted(groups, key=lambda x: (x.sort_order, x.name)):
+            grouped.setdefault(g, []).append(ex)
+    
+    grouped_exercises = sorted(
+        grouped.items(),
+        key=lambda item: (item[0].sort_order, item[0].name)
+    )
+
+    muscle_groups = MuscleGroup.objects.order_by("sort_order", "name")
+    primary_muscles = Muscle.objects.select_related("group").order_by("group__sort_order", "sort_order", "name")
+    equipment_choices = Exercise._meta.get_field("equipment").choices
+
+
     context = {
-        "exercises": exercises,
+        "grouped_exercises": grouped_exercises,
+        "uncategorized": uncategorized,
         "q": q,
+        "muscle_groups": muscle_groups,
+        "primary_muscles": primary_muscles,
+        "equipment_choices": equipment_choices,
+        "selected_groups": group_ids,
+        "selected_muscles": pm_ids,
+        "selected_equipment": equipments,
     }
     return render(request, "dex/exercise_list.html", context)
 
