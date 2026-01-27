@@ -3,3 +3,13 @@ db.sqlite3
 
 # Docs / notes
 AGENTS.md
+
+# .gitignore に追記（なければ作成）
+cat >> .gitignore << 'EOF'
+# macOS
+.DS_Store
+**/.DS_Store
+
+# Django
+Liftdex/media/
+EOF
